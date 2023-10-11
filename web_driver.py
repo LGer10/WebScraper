@@ -1,3 +1,13 @@
+"""
+Webscraping Project for Swiss Amateur Soccer
+============================================
+
+web_driver.py
+----------
+Initialize chrome webdriver for selenium
+
+"""
+
 from selenium import webdriver
 
 options = webdriver.ChromeOptions()

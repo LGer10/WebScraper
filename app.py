@@ -1,4 +1,13 @@
-"""Displays Rankins an Topscorers for Seasons 2019, 2020 an 2021"""
+"""
+Webscraping Project for Swiss Amateur Soccer
+============================================
+
+app.py
+----------
+Displays transformed data in a streamlit app
+with options to filter for players or goals treshold
+
+"""
 
 import pandas as pd
 import plotly.express as px
@@ -160,6 +169,7 @@ st.plotly_chart(
 st.write("Torschützen-Liste")
 topscorer_list = topscorer_data.reset_index()
 topscorer_list.index = topscorer_list.index + 1
+
 if selected_player == '<select>':
     st.dataframe(topscorer_list[topscorer_list['AnzahlTore'] >= goals_slider])
 else:

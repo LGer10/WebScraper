@@ -1,11 +1,27 @@
-"""Loads data to excel file for seasons 2019, 2020 and 2021"""
+"""
+Webscraping Project for Swiss Amateur Soccer
+============================================
+
+load.py
+----------
+Loads extracted data to excel files
+
+"""
 
 import pandas as pd
 from extract import rankings, games
 
 
 def load_rankings(rankings):
-    """Loads rankings data to excel file for seasons 2019, 2020 and 2021"""
+    """
+    Loads rankings to excel file
+
+    Parameters
+    ----------
+    rankings : dict
+        rankings for different seasons
+
+   """
 
     for ranking in rankings.keys():
 
@@ -21,7 +37,15 @@ def load_rankings(rankings):
 
 
 def load_games(games):
-    """Loads game data to excel file for seasons 2019, 2020 and 2021"""
+
+    """
+    Loads games to excel file
+
+    Parameters
+    ----------
+    games : gamesings for different seasons
+
+    """
 
     for season in games.keys():
 

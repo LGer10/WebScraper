@@ -1,10 +1,21 @@
-"""Scraps data from SFVBJ Website"""
+""" 
+Webscraping Project for Swiss Amateur Soccer 
+============================================
+
+extract.py
+----------
+Extracts data from season 2019 - 2021 of 5th league, 
+group 1 teams in region Bern/Jura
+
+"""
+
 from tqdm import tqdm
 import pandas as pd
 from bs4 import BeautifulSoup
 import re
 from web_driver import driver
 
+# base link for better readability of rankings/games links
 base_link = "https://www.fvbj-afbj.ch/fussballverband-bern-jura/spielbetrieb-fvbj/"
 
 season_ranking_links = [
@@ -25,11 +36,25 @@ season_games_links = [
     + "meisterschaft-fvbj.aspx/oid-6/s-2019/ln-13040/ls-17083/sg-50320/a-msp/",
 ]
 
+# base url for creation of different games links
 base_url = "https://www.fvbj-afbj.ch/"
 
 
 def extract_rankings(season_ranking_links):
-    """Extrats data for  seasosn 2019, 2020 and 2021"""
+    """
+    Extrats ratings
+
+    Parameters
+    ----------
+    season_ranking-links : list
+        links to the seasons rankings
+
+    Returns
+    -------
+    rankings: dict
+        rankings of the different seasons
+
+    """
 
     rankings = {
         "ranking_2021": pd.DataFrame(),
@@ -38,6 +63,8 @@ def extract_rankings(season_ranking_links):
     }
 
     print("Get Ratings Data")
+
+    # extract elements of rankings table and assign values to dataframe
     for link in tqdm(season_ranking_links):
         driver.get(link)
         page_source = driver.page_source
@@ -46,28 +73,58 @@ def extract_rankings(season_ranking_links):
         seed = [
             seed.text.replace(".", "")
             for seed in soup.find_all(attrs={"class": "ranCrang"})
+            if hasattr(seed, "text")
         ]
-        team = [team.text for team in soup.find_all(attrs={"class": "ranCteam"})]
-        games = [games.text for games in soup.find_all(attrs={"class": "ranCsp"})]
-        wins = [wins.text for wins in soup.find_all(attrs={"class": "ranCs"})]
-        losses = [losses.text for losses in soup.find_all(attrs={"class": "ranCu"})]
-        draws = [draws.text for draws in soup.find_all(attrs={"class": "ranCn"})]
+        team = [
+            team.text
+            for team in soup.find_all(attrs={"class": "ranCteam"})
+            if hasattr(team, "text")
+        ]
+        games = [
+            games.text
+            for games in soup.find_all(attrs={"class": "ranCsp"})
+            if hasattr(games, "text")
+        ]
+        wins = [
+            wins.text
+            for wins in soup.find_all(attrs={"class": "ranCs"})
+            if hasattr(wins, "text")
+        ]
+        losses = [
+            losses.text
+            for losses in soup.find_all(attrs={"class": "ranCu"})
+            if hasattr(losses, "text")
+        ]
+        draws = [
+            draws.text
+            for draws in soup.find_all(attrs={"class": "ranCn"})
+            if hasattr(draws, "text")
+        ]
         violation_points = [
             violation_points.text.replace("(", "").replace(")", "")
             for violation_points in soup.find_all(attrs={"class": "ranCstrp"})
+            if hasattr(violation_points, "text")
         ]
         golas_made = [
-            golas_made.text for golas_made in soup.find_all(attrs={"class": "ranCtg"})
+            golas_made.text
+            for golas_made in soup.find_all(attrs={"class": "ranCtg"})
+            if hasattr(golas_made, "text")
         ]
         goals_against = [
             goals_against.text
             for goals_against in soup.find_all(attrs={"class": "ranCte"})
+            if hasattr(goals_against, "text")
         ]
         goal_difference = [
             goal_difference.text
             for goal_difference in soup.find_all(attrs={"class": "ranCtdf"})
+            if hasattr(goal_difference, "text")
         ]
-        points = [points.text for points in soup.find_all(attrs={"class": "ranCpt"})]
+        points = [
+            points.text
+            for points in soup.find_all(attrs={"class": "ranCpt"})
+            if hasattr(points, "text")
+        ]
 
         ranking = pd.DataFrame(
             {
@@ -98,7 +155,20 @@ def extract_rankings(season_ranking_links):
 
 
 def get_games_links(base_url):
-    """Gets links for every game of seasosn 2019, 2020 and 2021"""
+    """
+    Extracts links for every game per season
+
+    Parameters
+    ----------
+    base_url : str
+        base url to create games links
+
+    Returns
+    -------
+    games_links_cleaned : dict
+        games links
+
+    """
 
     games_links_cleaned = {
         "season_2021": [],
@@ -135,7 +205,20 @@ def get_games_links(base_url):
 
 
 def extract_games(games_links_cleaned):
-    """Extrats games data for seasosn 2019, 2020 and 2021"""
+    """
+    Extracts games data
+
+    Parameters
+    ----------
+    games_links_cleaned : dict
+        games links for different seasons
+
+    Returns
+    -------
+    games : dict
+        games data for different seasons
+
+    """
 
     games = {
         "games_2021": pd.DataFrame(),
@@ -153,44 +236,38 @@ def extract_games(games_links_cleaned):
             soup = BeautifulSoup(page_source, "lxml")
 
             result = soup.find(attrs={"class": "shortResults"})
-            try:
+
+            if hasattr(result, "text"):
                 result = result.text
-            except:
+            else:
                 result = "-"
 
             home_team = soup.find(attrs={"class": "shortTeamHeim"})
-            try:
+            if hasattr(home_team, "text"):
                 home_team = home_team.text
-            except:
+            else:
                 home_team = "-"
 
             away_team = soup.find(attrs={"class": "shortTeamGast"})
-            try:
+            if hasattr(away_team, "text"):
                 away_team = away_team.text
-            except:
+            else:
                 away_team = "-"
 
-            try:
-                home_scorers = [
-                    home_scorer.text
-                    for home_scorer in soup.find_all(
-                        attrs={"class": "shortSpielerHome"}
-                    )
-                ]
-                home_scorers = ",".join(home_scorers)
-            except:
-                home_scorers = "-"
+            home_scorers = [
+                home_scorer.text
+                for home_scorer in soup.find_all(attrs={"class": "shortSpielerHome"})
+                if hasattr(home_scorer, "text")
+            ]
 
-            try:
-                away_scorers = [
-                    away_scorer.text
-                    for away_scorer in soup.find_all(
-                        attrs={"class": "shortSpielerGast"}
-                    )
-                ]
-                away_scorers = ",".join(away_scorers)
-            except:
-                away_scorers = "-"
+            home_scorers = ",".join(home_scorers)
+
+            away_scorers = [
+                away_scorer.text
+                for away_scorer in soup.find_all(attrs={"class": "shortSpielerGast"})
+                if hasattr(away_scorers, "text")
+            ]
+            away_scorers = ",".join(away_scorers)
 
             df = pd.DataFrame(
                 [

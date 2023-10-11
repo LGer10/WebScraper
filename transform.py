@@ -1,7 +1,17 @@
-"""Transforms data scraped from SFVBJ website"""
+"""
+Webscraping Project for Swiss Amateur Soccer
+============================================
+
+transform.py
+----------
+Transforms extracted data to display rankings and topscorers 
+in a streamlit app
+
+"""
+
 import pandas as pd
 
-"""Read data from excel files"""
+#Read data from excel files
 
 rankings = {
     "ranking_2021": pd.DataFrame(),
@@ -25,7 +35,22 @@ for game in games.keys():
 
 
 def transform_rankings(rankings):
-    """Transforms rankings data"""
+
+    """
+    Transforms rankings 
+
+    Parameters
+    ----------
+    rankings : dict
+        rankings for different seasons
+
+    Returns
+    -------
+    rankings : dict
+        transformed rankings
+
+    """ 
+   
     for ranking in rankings.keys():
 
         rankings[ranking].astype(
@@ -57,6 +82,10 @@ def transform_rankings(rankings):
             },
             inplace=True,
         )
+        # rankings[ranking]['S%'] = rankings[ranking]['S'].values / \
+        #     rankings[ranking]['Sp'].values
+        # rankings[ranking]['SW'] = rankings[ranking]['T'].values**2 / \
+        #     (rankings[ranking]['T'].values ** 2 +  rankings[ranking]['GT'].values **2)
 
     return rankings
 
@@ -78,7 +107,23 @@ def clean_alt_list(string_):
 
 
 def transform_games(games):
-    """Transforms games data"""
+    """
+    Transforms games 
+
+    Parameters
+    ----------
+    games : dict
+        games for different seasons
+
+    Returns
+    -------
+    games : dict
+        transformed games
+    player_stats : dict
+        players stats
+
+    """    
+    
     player_stats = {
         "games_2021": pd.DataFrame(),
         "games_2020": pd.DataFrame(),
