@@ -1,6 +1,2 @@
-# WebScraper
-Python WebScraper
+# Python Webscraping Project for Swiss Amateur Soccer
 
-
-Webscraping Project for Swiss Amateur Soccer
-============================================
